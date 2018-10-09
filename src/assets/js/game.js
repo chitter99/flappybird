@@ -1,14 +1,14 @@
-var game = (function() {
-	var c = document.getElementById('game'),
+(function() {
+	var c = document.getElementById('g'),
 		ctx = c.getContext('2d');
 	
 	var PLAYER_INPUT_ALLOWED = false,
 		GAME_PLAYING = false,
-		PIPE_SPAWN_DIS = c.width / 2 + 52,
-		PIPE_STARTING_OFFSET = c.width * 2,
-		PIPE_SPACE = c.height / 5,
+		PIPE_SPAWN_DIS = 196,
+		PIPE_STARTING_OFFSET = 576,
+		PIPE_SPACE = 100,
 		PIPE_HEIGHT_RANGE_START = 150,
-		PIPE_HEIGHT_RANGE_END = 512 - 112 - 200,
+		PIPE_HEIGHT_RANGE_END = 200,
 		GRAVITY = 4;
 	
 	var speed = 1, spanwedPipes = 0;
@@ -93,11 +93,15 @@ var game = (function() {
 		var playerX = this.x + this.width,
             playerTopY = this.y,
 			playerBottomY = this.y + this.height;
-			
+		
+		if(playerTopY < -this.width) {
+			this.velocity = 0;
+			return true;
+		}
 		
 		var hasCollided = false;
 
-		objects.pipes.forEach((pipe) => {
+		objects.pipes.forEach(function(pipe) {
 			var pipeFrontX = pipe.x,
 				pipeBackX = pipe.x + assets.pipe.width; 
 			
@@ -124,7 +128,7 @@ var game = (function() {
 		if(this.hasCollided() && PLAYER_INPUT_ALLOWED) {
 			PLAYER_INPUT_ALLOWED = false;
 			speed = 0;
-			setTimeout(() => {
+			setTimeout(function() {
 				GAME_PLAYING = false;
 			}, 500);
 		}
@@ -139,7 +143,6 @@ var game = (function() {
 		}
 	};
 	Player.prototype.draw = function() {
-		console.log(this.animationIndex);
 		ctx.drawImage(assets.bird[this.animationIndex], 0, 0, this.width, this.height, this.x, this.y, this.width, this.height);
 	};
 	Player.prototype.reset = function() {
@@ -186,9 +189,8 @@ var game = (function() {
 		ctx.restore();
 	};
 
-	function ScoreBoard(y) {
-		this.y = y || 50;
-		this.frontSpacing = 3;
+	function ScoreBoard() {
+		
 	}
 	ScoreBoard.prototype.update = function() {
 		// Nothing to do
@@ -198,6 +200,7 @@ var game = (function() {
 	};
 	ScoreBoard.prototype.draw = function() {
 		var str = score.get().toString();
+		var spacing = 3;
 		var sprites = [];
 		for(var i = 0; i < str.length; i++) {
 			var dig = str.charCodeAt(i);
@@ -206,42 +209,42 @@ var game = (function() {
 			}
 		}
 		var totalWidth = 0;
-		sprites.forEach((sprite) => {
+		sprites.forEach(function(sprite) {
 			totalWidth += sprite.width;
-			totalWidth += this.frontSpacing;
+			totalWidth += spacing;
 		});
-		totalWidth -= this.frontSpacing;
+		totalWidth -= spacing;
 
 		var curX = (c.width / 2) - (totalWidth / 2);
-		sprites.forEach((letter) => {
-			ctx.drawImage(letter, curX, this.y);
-			curX += this.frontSpacing + letter.width;
+		sprites.forEach(function(letter) {
+			ctx.drawImage(letter, curX, 50);
+			curX += spacing + letter.width;
 		});
 	};
 
 	// Assets
 	var assets = {};
 	function loadAssets() {
-		assets.background = loadImage('assets/sprites/background.png', 512, 288);
+		assets.background = loadImage('s/b.png', 512, 288);
 		assets.bird = [
-			loadImage('assets/sprites/downflap.png', 24, 34),
-			loadImage('assets/sprites/midflap.png', 24, 34),
-			loadImage('assets/sprites/upflap.png', 24, 34)
+			loadImage('s/c.png', 24, 34),
+			loadImage('s/d.png', 24, 34),
+			loadImage('s/e.png', 24, 34)
 		];
-		assets.pipe = loadImage('assets/sprites/pipe.png', 320, 52);
-		assets.base = loadImage('assets/sprites/base.png', 112, 336);
-		assets.gameover = loadImage('assets/sprites/gameover.png', 42, 192);
+		assets.pipe = loadImage('s/p.png', 320, 52);
+		assets.base = loadImage('s/a.png', 112, 336);
+		assets.gameover = loadImage('s/g.png', 42, 192);
 		assets.font = {
-			0: loadImage('assets/sprites/font/0.png', 36, 24),
-			1: loadImage('assets/sprites/font/1.png', 36, 16),
-			2: loadImage('assets/sprites/font/2.png', 36, 24),
-			3: loadImage('assets/sprites/font/3.png', 36, 24),
-			4: loadImage('assets/sprites/font/4.png', 36, 24),
-			5: loadImage('assets/sprites/font/5.png', 36, 24),
-			6: loadImage('assets/sprites/font/6.png', 36, 24),
-			7: loadImage('assets/sprites/font/7.png', 36, 24),
-			8: loadImage('assets/sprites/font/8.png', 36, 24),
-			9: loadImage('assets/sprites/font/9.png', 36, 24)
+			0: loadImage('s/0.png', 36, 24),
+			1: loadImage('s/1.png', 36, 16),
+			2: loadImage('s/2.png', 36, 24),
+			3: loadImage('s/3.png', 36, 24),
+			4: loadImage('s/4.png', 36, 24),
+			5: loadImage('s/5.png', 36, 24),
+			6: loadImage('s/6.png', 36, 24),
+			7: loadImage('s/7.png', 36, 24),
+			8: loadImage('s/8.png', 36, 24),
+			9: loadImage('s/9.png', 36, 24)
 		};
 	}
 	function loadImage(url, heiht, width) {
@@ -252,7 +255,7 @@ var game = (function() {
 
 	// Rendering / drawing
 	function draw() {
-		forEachNode(objects, (node) => {
+		forEachNode(objects, function(node) {
 			node.draw();
 		});
 	}
@@ -267,7 +270,7 @@ var game = (function() {
 	function update() {
 		now = Date.now();
 		deltaTime = now - lastFrame;
-		forEachNode(objects, (node) => {
+		forEachNode(objects, function(node) {
 			node.update();
 		});
 		draw();
@@ -281,7 +284,7 @@ var game = (function() {
 	function resetGame() {
 		// Reset game to inital
 		score.reset();
-		forEachNode(objects, (node) => {
+		forEachNode(objects, function(node) {
 			node.reset();
 		});
 		GAME_PLAYING = true;
@@ -293,7 +296,7 @@ var game = (function() {
 		for(var key in nodes) {
 			var node = nodes[key];
 			if(Array.isArray(node)) {
-				node.forEach((node) => {
+				node.forEach(function(node) {
 					callback(node);
 				});
 			} else {
@@ -337,14 +340,5 @@ var game = (function() {
 			}
 		});
 		loadGame();
-	};
-
-	return {
-		// Im too bad in this game...
-		godmod: function() {
-			objects.player.hasCollided = () => {
-				return false;
-			};
-		}
 	};
 })();
