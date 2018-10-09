@@ -75,7 +75,7 @@ var game = (function() {
 		this.animationIndex = 0;
 	}
 	Player.prototype.jump = function() {
-		this.velocity -= 6;
+		this.velocity = -3;
 		this.animationIndex = 0;
 	};
 	Player.prototype.hasCollidedWithGround = function() {
